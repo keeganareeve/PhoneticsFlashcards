@@ -1,5 +1,5 @@
 # PhoneticsFlaschards  
-Scripts to prepare certain datasets, notebooks, and other related code for learning phonetics through a flashcard-like system.  
+Notebooks, other related code, and instructions to prepare certain datasets for learning phonetics through a flashcard-like system.  
 
 Accordingly, this github repo contains three folders: PyScripts, Notebooks, and ShellScripts.  
   
