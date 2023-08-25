@@ -1,19 +1,35 @@
+'''
+To run this script:
+    python3 dutch_diphones_flashcards.py (directory_path) (image_files) (batchNum)
+
+Example:
+    python3 PyScripts/dutch_diphones_flashcards.py ./ /home/user/Desktop/CreatingSoundPics/DutchDiphones/dutch-vowels-imgs/ 7
+
+It will display an image on the spectrogram as another window. Press any key to have the script continue in order to quiz you! Have fun learning phonetics!
+'''
+
 import numpy as np  # linear algebra
 import pandas as pd  # data processing, CSV file I/O (e.g. pd.read_csv)
 import os
+import sys
 
+import time
 import random
 import re
-from IPython.display import Image, display
+# from IPython.display import Image, display
+import cv2
 import numbers
 
 # Arguments
 # Replace this with the actual path to your directory where your outputs will be found (this can be the same as the directory of your image files)
-directory_path = "./"
+directory_path = str(sys.argv[1])
 # path/to/diphthong_or_consonant_or_vowel_dir
-image_files = './pairs-dutch-vowels-imgs/dutch-vowels-imgs/'
+if str(sys.argv[2]) in ["Same", "same", "s"]:
+    image_files = str(sys.argv[1])
+else:
+    image_files = str(sys.argv[2])
 # number of items to add to list to review
-batchNum = 7
+batchNum = int(sys.argv[3])  # numeric, default=7
 # 3 for easy or 5 for difficult are recommended.
 # (Changes the number of times that an item is asked: for a value of 3, you must answer right thrice; for 5, four times.)
 difficulty_num = 3
@@ -208,6 +224,33 @@ def check_lines(filename):
     return True
 
 
+def process_and_update_file(filename):
+    with open(filename, 'r') as file:
+        lines = file.readlines()
+
+    with open(filename, 'w') as file:
+        for line in lines:
+            words = line.strip().split()
+            if len(words) >= 3:
+                try:
+                    # Convert third word to a float, then to an integer, and then back to a string
+                    words[2] = str(int(float(words[2])))
+                except ValueError:
+                    pass  # Skip conversion if the third word is not a float
+            updated_line = ' '.join(words) + '\n'
+            file.write(updated_line)
+
+
+def add_line_to_file(filename, line):
+    with open(filename, 'a') as file:
+        file.write(line + '\n')
+
+
+def create_text_document(filename, content):
+    with open(filename, 'w') as file:
+        file.write(content)
+
+
 # Checking for probabilities.txt document and make if not present
 # In format <sound> <original-title> <probability>
 if check_file_exists(directory_path, 'probabilities.txt') == False:
@@ -312,33 +355,6 @@ def update_probability(filename, quizzing_file, new_number):
 # to make sure no non-numeric floats remain
 
 
-def process_and_update_file(filename):
-    with open(filename, 'r') as file:
-        lines = file.readlines()
-
-    with open(filename, 'w') as file:
-        for line in lines:
-            words = line.strip().split()
-            if len(words) >= 3:
-                try:
-                    # Convert third word to a float, then to an integer, and then back to a string
-                    words[2] = str(int(float(words[2])))
-                except ValueError:
-                    pass  # Skip conversion if the third word is not a float
-            updated_line = ' '.join(words) + '\n'
-            file.write(updated_line)
-
-
-def add_line_to_file(filename, line):
-    with open(filename, 'a') as file:
-        file.write(line + '\n')
-
-
-def create_text_document(filename, content):
-    with open(filename, 'w') as file:
-        file.write(content)
-
-
 # Does it
 image_path = image_files+quizzing_file
 if quizzing_file in current_images:
@@ -346,12 +362,23 @@ if quizzing_file in current_images:
 
     if showAnswer == True:
         print(correct_answer)
-    # Display the image
-    display(Image(filename=image_path))
+    # display(Image(filename=image_path))
     print(f"The sounds can be {str(unique_sounds)[1:-1]}.")
+    time.sleep(5)
+    # Display the image
+    print(f'displaying...{image_path}')
+    print("---------------------------------------")
+    # for fix: https://stackoverflow.com/questions/35180764/opencv-python-image-too-big-to-display
+    # cv2.namedWindow("Output", cv2.WINDOW_NORMAL)
+    image_to_display = cv2.imread(image_path)
+    image_window = cv2.resize(image_to_display, (960, 540))
+    cv2.imshow('', image_window)
+    cv2.waitKey()
+
     user_input = input(
         "Guess the first sound in the audio represented by this spectrogram: ")
     print("---------------------------------------")
+
     if user_input == correct_answer:
         print("\t\tCorrect!")
         new_number = round(staged_normalized_probabilities[item_number]/2)
