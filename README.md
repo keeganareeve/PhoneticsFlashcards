@@ -1,7 +1,11 @@
-# PhoneticsFlaschards  
+# PhoneticsFlaschards 
+
 Notebooks, other related code, and instructions to prepare certain datasets for learning phonetics through a flashcard-like system.  
 
 Accordingly, this github repo contains three folders: PyScripts, Notebooks, and ShellScripts.  
+
+#### Keywords: 
+opencv-python, phonetic science communication, computational linguistics, spaced repetition, gamification
   
 ## Instructions
 The first thing to do is prepare a dataset. My scripts and notebooks work best with the Dutch diphones dataset found publicly avaiable at this link (https://www.mpi.nl/world/dcsp/diphones/index.html) or the English diphones dataset found publicly available here (https://dingo.sbs.arizona.edu/~dpl/english_diphones.htm).  
